@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+node_modules/
+build/
+dist/
+*.egg-info/
+
+# Local generated outputs
+exports/*.xlsx
+exports/*.png
+exports/*.pdf
+!exports/.gitkeep

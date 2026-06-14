@@ -1,0 +1,1 @@
+"""CCNU Course Planner package."""
