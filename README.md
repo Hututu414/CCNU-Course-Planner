@@ -10,7 +10,7 @@
 pip install -r requirements.txt
 ```
 
-`main.py` 启动时会先检查 `requirements.txt` 中的运行依赖。如果当前 Python 环境缺少依赖，程序会自动安装缺少的包。
+程序不会在启动时自动安装依赖。如果运行时报缺少包，请按需执行上面的安装命令。
 
 测试依赖单独放在 `requirements-dev.txt`，正常运行程序不需要安装测试依赖。
 
