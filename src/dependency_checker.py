@@ -17,10 +17,11 @@ def ensure_requirements(requirements_path: Path) -> None:
     if not missing:
         return
 
-    names = ", ".join(missing)
+    names = ", ".join(requirement_name(spec) for spec in missing)
     print(f"缺少依赖：{names}")
-    print("正在使用当前 Python 环境安装 requirements.txt 中的依赖...")
-    command = [sys.executable, "-m", "pip", "install", "-r", str(requirements_path)]
+    print(f"当前 Python：{sys.executable}")
+    print("正在使用当前 Python 环境安装缺少的依赖...")
+    command = [sys.executable, "-m", "pip", "install", *missing]
     try:
         subprocess.check_call(command)
     except (OSError, subprocess.CalledProcessError) as exc:
@@ -28,31 +29,38 @@ def ensure_requirements(requirements_path: Path) -> None:
 
     still_missing = find_missing_requirements(requirements_path)
     if still_missing:
-        names = ", ".join(still_missing)
+        names = ", ".join(requirement_name(spec) for spec in still_missing)
         raise SystemExit(f"依赖安装后仍缺少：{names}")
 
 
 def find_missing_requirements(requirements_path: Path) -> list[str]:
     return [
-        requirement
-        for requirement in read_requirement_names(requirements_path)
-        if importlib.util.find_spec(import_name_for_requirement(requirement)) is None
+        spec
+        for spec in read_requirement_specs(requirements_path)
+        if importlib.util.find_spec(import_name_for_requirement(requirement_name(spec))) is None
     ]
 
 
 def read_requirement_names(requirements_path: Path) -> list[str]:
+    return [requirement_name(spec) for spec in read_requirement_specs(requirements_path)]
+
+
+def read_requirement_specs(requirements_path: Path) -> list[str]:
     if not requirements_path.exists():
         return []
 
-    names: list[str] = []
+    specs: list[str] = []
     for raw_line in requirements_path.read_text(encoding="utf-8").splitlines():
         line = raw_line.split("#", 1)[0].strip()
         if not line or line.startswith("-") or "://" in line:
             continue
-        match = re.match(r"([A-Za-z0-9_.-]+)", line)
-        if match:
-            names.append(match.group(1))
-    return names
+        specs.append(line)
+    return specs
+
+
+def requirement_name(requirement_spec: str) -> str:
+    match = re.match(r"([A-Za-z0-9_.-]+)", requirement_spec)
+    return match.group(1) if match else requirement_spec
 
 
 def import_name_for_requirement(requirement: str) -> str:

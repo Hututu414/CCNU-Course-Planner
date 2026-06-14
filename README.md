@@ -10,11 +10,9 @@
 pip install -r requirements.txt
 ```
 
-`main.py` 启动时会先检查 `requirements.txt` 中的依赖。如果当前 Python 环境缺少依赖，程序会自动执行：
+`main.py` 启动时会先检查 `requirements.txt` 中的运行依赖。如果当前 Python 环境缺少依赖，程序会自动安装缺少的包。
 
-```bash
-python -m pip install -r requirements.txt
-```
+测试依赖单独放在 `requirements-dev.txt`，正常运行程序不需要安装测试依赖。
 
 运行程序：
 
@@ -52,6 +50,7 @@ class_table/附件2：2026-2027学年第一学期选课手册.xlsx
 ## 测试
 
 ```bash
+python -m pip install -r requirements-dev.txt
 python -m pytest
 ```
 

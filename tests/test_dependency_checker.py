@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from src.dependency_checker import import_name_for_requirement, read_requirement_names
+from src.dependency_checker import import_name_for_requirement, read_requirement_names, read_requirement_specs, requirement_name
 
 
 def test_import_name_override_for_pillow():
@@ -23,3 +23,11 @@ def test_read_requirement_names_ignores_comments_and_options(tmp_path: Path):
     )
 
     assert read_requirement_names(requirements) == ["pandas", "openpyxl"]
+
+
+def test_read_requirement_specs_keep_version_specifiers(tmp_path: Path):
+    requirements = tmp_path / "requirements.txt"
+    requirements.write_text("pandas>=2\npillow==11.3.0\n", encoding="utf-8")
+
+    assert read_requirement_specs(requirements) == ["pandas>=2", "pillow==11.3.0"]
+    assert requirement_name("pandas>=2") == "pandas"
